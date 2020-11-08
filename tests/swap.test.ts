@@ -72,4 +72,37 @@ describe("Swap", function () {
     },
     TIMEOUT
   );
+
+  it(
+    "can get swap params when swap exact erc20 to erc20",
+    async function () {
+      // Prepare
+      const usdtToken = await getToken(
+        web3,
+        chainId,
+        "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+      );
+      const pairTokenEth = await getPair(erc20Token, ethToken, provider);
+      const pairEthToken = await getPair(ethToken, usdtToken, provider);
+      const route = getRoute([pairTokenEth, pairEthToken], erc20Token);
+      const trade = getTrade((10 ** 18).toString(), erc20Token, route);
+
+      // Action
+      const data = swap.createSwapParams(trade, SwapType.EXACT_TOKEN_FOR_TOKEN);
+
+      // Assertion
+      const amountIn = JSBI.toNumber(trade.inputAmount.raw);
+      const minimumAmountOut = JSBI.toNumber(
+        trade.minimumAmountOut(new Percent("100", "10000")).raw
+      );
+
+      expect(data).toHaveLength(5);
+      expect(data[0]).toEqual(String(amountIn));
+      expect(data[1]).toEqual(String(minimumAmountOut));
+      expect(data[2]).toEqual([erc20Token.address, ethToken.address, usdtToken.address]);
+      expect(data[3]).toBe(wallet.address);
+      expect(data[4]).toBeDefined();
+    },
+    TIMEOUT
+  );
 });
