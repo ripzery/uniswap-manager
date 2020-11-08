@@ -16,7 +16,7 @@ describe("Swap", function () {
     web3 = new Web3(url);
     provider = new JsonRpcProvider(url);
     wallet = web3.eth.accounts.privateKeyToAccount(process.env.PRIVATE_KEY);
-    swap = new Swap(wallet, chainId);
+    swap = new Swap(web3, provider, wallet.address, chainId);
     ethToken = WETH[chainId];
     erc20Token = await getToken(web3, chainId, YFI);
   });
@@ -99,7 +99,11 @@ describe("Swap", function () {
       expect(data).toHaveLength(5);
       expect(data[0]).toEqual(String(amountIn));
       expect(data[1]).toEqual(String(minimumAmountOut));
-      expect(data[2]).toEqual([erc20Token.address, ethToken.address, usdtToken.address]);
+      expect(data[2]).toEqual([
+        erc20Token.address,
+        ethToken.address,
+        usdtToken.address,
+      ]);
       expect(data[3]).toBe(wallet.address);
       expect(data[4]).toBeDefined();
     },

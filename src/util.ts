@@ -14,9 +14,16 @@ import {
   TradeType,
   Currency,
   BigintIsh,
+  WETH,
+  ChainId,
 } from "@uniswap/sdk";
+import { ETH } from "./constants";
 
-export async function getToken(web3: Web3, chainId, address: string) {
+export async function getToken(web3: Web3, chainId: ChainId, address: string) {
+  if (address === ETH) {
+    return WETH[chainId];
+  }
+
   const decimals = await getTokenDecimal(web3, address);
   const symbol = await getTokenSymbol(web3, address);
   return new Token(chainId, address, decimals, symbol);
