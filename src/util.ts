@@ -30,7 +30,7 @@ export function getRoute(pairs: Pair[], input: Currency) {
   return new Route(pairs, input);
 }
 
-export function getTrade(amount: BigintIsh, token: Token, route: Route) {
+export function getTrade(amount: BigintIsh, token: Token, route: Route): Trade {
   try {
     return new Trade(
       route,

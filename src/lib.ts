@@ -5,7 +5,7 @@ import { ETH } from "./constants";
 import { getNetwork } from "@ethersproject/networks";
 import { getDefaultProvider, BaseProvider } from "@ethersproject/providers";
 import { getToken, getPair, getRoute, getTrade } from "./util";
-import { WETH, ChainId, BigintIsh } from "@uniswap/sdk";
+import { WETH, ChainId, BigintIsh, Trade } from "@uniswap/sdk";
 
 export default class Uniswap {
   web3: any;
@@ -30,7 +30,7 @@ export default class Uniswap {
    * @param currencyAddress (optional) A token address to be used as currency.
    * @param amount (optional) An amount of token to calculate the price.
    *
-   * @returns A trade object.
+   * @returns A promise of trade object.
    * Then, it can be used to get token price against currency token. For example,
    * Call `trade.outputAmount.toSignificant(6)` to get the price.
    */
@@ -38,21 +38,23 @@ export default class Uniswap {
     tokenAddress: string,
     currencyAddress: string,
     amount: BigintIsh
-  ) {
+  ): Promise<Trade> {
     const isInputETH = tokenAddress === ETH;
     const isOutputETH = currencyAddress === ETH;
-    const token = await getToken(
-      this.web3,
-      this.chainId,
-      Web3.utils.toChecksumAddress(tokenAddress)
-    );
-    const currencyToken = await getToken(
-      this.web3,
-      this.chainId,
-      Web3.utils.toChecksumAddress(currencyAddress)
-    );
-    const inputToken = isInputETH ? WETH[this.chainId] : token;
-    const outputToken = isOutputETH ? WETH[this.chainId] : currencyToken;
+    const inputToken = isInputETH
+      ? WETH[this.chainId]
+      : await getToken(
+          this.web3,
+          this.chainId,
+          Web3.utils.toChecksumAddress(tokenAddress)
+        );
+    const outputToken = isOutputETH
+      ? WETH[this.chainId]
+      : await getToken(
+          this.web3,
+          this.chainId,
+          Web3.utils.toChecksumAddress(currencyAddress)
+        );
     let route;
     if (isInputETH || isOutputETH) {
       const pair1 = await getPair(inputToken, outputToken, this.provider);
@@ -70,7 +72,6 @@ export default class Uniswap {
       );
       route = getRoute([pair1, pair2], inputToken);
     }
-    const trade = getTrade(amount, inputToken, route);
-    return trade.outputAmount.toSignificant(6);
+    return getTrade(amount, inputToken, route);
   }
 }
