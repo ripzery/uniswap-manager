@@ -3,6 +3,7 @@ import Web3 from "web3";
 import { getPair, getRoute, getToken, getTrade } from "../src/util";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import Swap from "../src/swap";
+import { SwapType } from "../src/constants";
 
 const TIMEOUT = 15000;
 describe("Swap", function () {
@@ -21,7 +22,7 @@ describe("Swap", function () {
   });
 
   it(
-    "can get swap params when swap eth to erc20",
+    "can get swap params when swap exact eth to erc20",
     async function () {
       // Prepare
       const pair = await getPair(ethToken, erc20Token, provider);
@@ -29,15 +30,15 @@ describe("Swap", function () {
       const trade = getTrade((10 ** 18).toString(), ethToken, route);
 
       // Action
-      const data = swap.createSwapParams(trade);
+      const data = swap.createSwapParams(trade, SwapType.EXACT_ETH_FOR_TOKEN);
 
       // Assertion
       const minimumAmount = JSBI.toNumber(
         trade.minimumAmountOut(new Percent("100", "10000")).raw
-      ).toString();
+      );
 
       expect(data).toHaveLength(4);
-      expect(data[0]).toEqual(minimumAmount);
+      expect(data[0]).toEqual(String(minimumAmount));
       expect(data[1]).toEqual([ethToken.address, erc20Token.address]);
       expect(data[2]).toBe(wallet.address);
       expect(data[3]).toBeDefined();
@@ -46,7 +47,7 @@ describe("Swap", function () {
   );
 
   it(
-    "can get swap params when swap erc20 to eth",
+    "can get swap params when swap exact erc20 to eth",
     async function () {
       // Prepare
       const pair = await getPair(ethToken, erc20Token, provider);
@@ -54,18 +55,20 @@ describe("Swap", function () {
       const trade = getTrade((10 ** 18).toString(), erc20Token, route);
 
       // Action
-      const data = swap.createSwapParams(trade);
+      const data = swap.createSwapParams(trade, SwapType.EXACT_TOKEN_FOR_ETH);
 
       // Assertion
-      const minimumAmount = JSBI.toNumber(
+      const amountIn = JSBI.toNumber(trade.inputAmount.raw);
+      const minimumAmountOut = JSBI.toNumber(
         trade.minimumAmountOut(new Percent("100", "10000")).raw
-      ).toString();
+      );
 
-      expect(data).toHaveLength(4);
-      expect(data[0]).toEqual(minimumAmount);
-      expect(data[1]).toEqual([erc20Token.address, ethToken.address]);
-      expect(data[2]).toBe(wallet.address);
-      expect(data[3]).toBeDefined();
+      expect(data).toHaveLength(5);
+      expect(data[0]).toEqual(String(amountIn));
+      expect(data[1]).toEqual(String(minimumAmountOut));
+      expect(data[2]).toEqual([erc20Token.address, ethToken.address]);
+      expect(data[3]).toBe(wallet.address);
+      expect(data[4]).toBeDefined();
     },
     TIMEOUT
   );
