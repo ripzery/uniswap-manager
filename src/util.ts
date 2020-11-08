@@ -2,7 +2,7 @@ export {};
 
 import Web3 from "web3";
 import { BaseProvider } from "@ethersproject/providers";
-import { erc20Abi } from "./abi";
+import { erc20Abi } from "../abi";
 
 import {
   Token,

@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import UniswapManager from "../";
+import UniswapManager from "../src";
 import { JsonRpcProvider } from "@ethersproject/providers";
 
 describe("Uniswap Manager", function () {
