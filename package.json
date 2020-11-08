@@ -4,7 +4,7 @@
   "description": "A high-level uniswap functionality library.",
   "main": "index.js",
   "scripts": {
-    "test": "jest ."
+    "test": "jest"
   },
   "type": "module",
   "author": "ripzery",
