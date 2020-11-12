@@ -2,7 +2,7 @@ name: build-lint-test
 on:
   push
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - name: Retrieve envs
@@ -10,8 +10,16 @@ jobs:
           setupFile: ${{ secrets.ENV }}
         run: mkdir -p .jest && \
           echo "$setupFile" | base64 -d > .jest/setEnvVars.js
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
       - run: npm install
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - run: npm run test
 
