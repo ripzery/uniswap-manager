@@ -5,24 +5,18 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v1
-      - uses: actions/checkout@v2
       - name: Decrypt secret
         run: ./.github/scripts/decrypt_secret.sh
         env:
           ENV_PASSPHRASE: ${{ secrets.ENV_PASSPHRASE }}
       - name: Test printing envs
         run: cat .jest/setEnvVars.js
-  build:
+  test:
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - run: ls -al
+      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
       - run: npm install
-      - run: ls -al ..
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - run: npm run test
 
