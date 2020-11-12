@@ -1,9 +1,5 @@
-export {};
-
-import Web3 from "web3";
-import { BaseProvider } from "@ethersproject/providers";
-import { erc20Abi } from "../abi";
-
+import Web3 from 'web3';
+import { BaseProvider } from '@ethersproject/providers';
 import {
   Token,
   Fetcher,
@@ -16,8 +12,12 @@ import {
   BigintIsh,
   WETH,
   ChainId,
-} from "@uniswap/sdk";
-import { ETH } from "./constants";
+} from '@uniswap/sdk';
+import { erc20Abi } from '../abi';
+
+import { ETH } from './constants';
+
+export {};
 
 export async function getToken(web3: Web3, chainId: ChainId, address: string) {
   if (address === ETH) {
@@ -42,14 +42,14 @@ export function getTrade(amount: BigintIsh, token: Token, route: Route): Trade {
     return new Trade(
       route,
       new TokenAmount(token, amount),
-      TradeType.EXACT_INPUT
+      TradeType.EXACT_INPUT,
     );
   } catch (err) {
     throw new Error(`${route.output.symbol} is not listed yet`);
   }
 }
 
-export function checkAddress(address: string, error = "Invalid address") {
+export function checkAddress(address: string, error = 'Invalid address') {
   if (!Web3.utils.isAddress(address)) {
     throw Error(error);
   }

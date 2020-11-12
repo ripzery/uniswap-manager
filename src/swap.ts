@@ -1,17 +1,25 @@
-import { BigintIsh, ChainId, Percent, Trade, WETH } from "@uniswap/sdk";
-import { SwapType } from "./constants";
-import { getPair, getRoute, getToken, getTrade } from "./util";
-import { BaseProvider } from "@ethersproject/providers";
-import { uniRouterAbi } from "../abi";
-import JSBI from "jsbi";
-import Web3 from "web3";
+import {
+  BigintIsh, ChainId, Percent, Trade, WETH,
+} from '@uniswap/sdk';
+import { BaseProvider } from '@ethersproject/providers';
+import JSBI from 'jsbi';
+import Web3 from 'web3';
+import { SwapType } from './constants';
+import {
+  getPair, getRoute, getToken, getTrade,
+} from './util';
+import { uniRouterAbi } from '../abi';
 
-const ROUTERV2_ADDRESS = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
+const ROUTERV2_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
 export default class Swap {
   web3: Web3;
+
   provider: BaseProvider;
+
   walletAddress: string;
+
   slippage: Percent;
+
   chainId: ChainId;
 
   constructor(
@@ -19,7 +27,7 @@ export default class Swap {
     provider: BaseProvider,
     walletAddress: string,
     chainId: ChainId = ChainId.MAINNET,
-    slippage: Percent = new Percent("100", "10000")
+    slippage: Percent = new Percent('100', '10000'),
   ) {
     this.web3 = web3;
     this.slippage = slippage;
@@ -32,11 +40,11 @@ export default class Swap {
     tokenIn: string,
     tokenOut: string,
     amount: BigintIsh,
-    swapType: SwapType
+    swapType: SwapType,
   ) {
     const uniRouterContract = new this.web3.eth.Contract(
       uniRouterAbi,
-      ROUTERV2_ADDRESS
+      ROUTERV2_ADDRESS,
     );
 
     const _tokenIn = await getToken(this.web3, this.chainId, tokenIn);
@@ -55,12 +63,12 @@ export default class Swap {
         const pair1 = await getPair(
           _tokenIn,
           WETH[this.chainId],
-          this.provider
+          this.provider,
         );
         const pair2 = await getPair(
           WETH[this.chainId],
           _tokenOut,
-          this.provider
+          this.provider,
         );
         const route = getRoute([pair1, pair2], _tokenIn);
         trade = getTrade(amount, _tokenIn, route);
@@ -76,7 +84,7 @@ export default class Swap {
   createSwapParams(trade: Trade, swapType: SwapType) {
     const amountIn = JSBI.BigInt(trade.inputAmount.raw);
     const amountOutMin = JSBI.toNumber(
-      trade.minimumAmountOut(this.slippage).raw
+      trade.minimumAmountOut(this.slippage).raw,
     );
     const path = trade.route.path.map(({ address }) => address);
     const to = this.walletAddress;

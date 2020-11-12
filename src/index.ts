@@ -1,3 +1,3 @@
-import UniswapManager from "./lib";
+import UniswapManager from './lib';
 
 export default UniswapManager;

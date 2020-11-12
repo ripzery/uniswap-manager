@@ -1,21 +1,27 @@
-export {};
+import Web3 from 'web3';
+import { getNetwork } from '@ethersproject/networks';
+import { getDefaultProvider, BaseProvider } from '@ethersproject/providers';
+import {
+  WETH, ChainId, BigintIsh, Trade,
+} from '@uniswap/sdk';
+import {
+  getToken, getPair, getRoute, getTrade,
+} from './util';
+import { ETH } from './constants';
 
-import Web3 from "web3";
-import { ETH } from "./constants";
-import { getNetwork } from "@ethersproject/networks";
-import { getDefaultProvider, BaseProvider } from "@ethersproject/providers";
-import { getToken, getPair, getRoute, getTrade } from "./util";
-import { WETH, ChainId, BigintIsh, Trade } from "@uniswap/sdk";
+export {};
 
 export default class Uniswap {
   web3: any;
+
   chainId: ChainId;
+
   provider: BaseProvider;
 
   constructor(
     web3: any,
     chainId: ChainId,
-    provider = getDefaultProvider(getNetwork(chainId))
+    provider = getDefaultProvider(getNetwork(chainId)),
   ) {
     this.web3 = web3;
     this.chainId = chainId;
@@ -37,24 +43,24 @@ export default class Uniswap {
   async getPrice(
     tokenAddress: string,
     currencyAddress: string,
-    amount: BigintIsh
+    amount: BigintIsh,
   ): Promise<Trade> {
     const isInputETH = tokenAddress === ETH;
     const isOutputETH = currencyAddress === ETH;
     const inputToken = isInputETH
       ? WETH[this.chainId]
       : await getToken(
-          this.web3,
-          this.chainId,
-          Web3.utils.toChecksumAddress(tokenAddress)
-        );
+        this.web3,
+        this.chainId,
+        Web3.utils.toChecksumAddress(tokenAddress),
+      );
     const outputToken = isOutputETH
       ? WETH[this.chainId]
       : await getToken(
-          this.web3,
-          this.chainId,
-          Web3.utils.toChecksumAddress(currencyAddress)
-        );
+        this.web3,
+        this.chainId,
+        Web3.utils.toChecksumAddress(currencyAddress),
+      );
     let route;
     if (isInputETH || isOutputETH) {
       const pair1 = await getPair(inputToken, outputToken, this.provider);
@@ -63,12 +69,12 @@ export default class Uniswap {
       const pair1 = await getPair(
         inputToken,
         WETH[this.chainId],
-        this.provider
+        this.provider,
       );
       const pair2 = await getPair(
         WETH[this.chainId],
         outputToken,
-        this.provider
+        this.provider,
       );
       route = getRoute([pair1, pair2], inputToken);
     }
