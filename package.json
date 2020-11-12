@@ -4,7 +4,8 @@
   "description": "A high-level uniswap functionality library.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint"
   },
   "type": "module",
   "author": "ripzery",
@@ -22,8 +23,13 @@
     "@babel/preset-env": "^7.12.1",
     "@ethersproject/contracts": "^5.0.5",
     "@ethersproject/solidity": "^5.0.5",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
     "babel-cli": "^6.26.0",
     "babel-jest": "^26.6.3",
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
     "jest": "^26.6.3",
     "ts-jest": "^26.4.3",
     "ts-node": "^9.0.0",
